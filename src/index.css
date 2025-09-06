@@ -198,4 +198,33 @@
   .pulse-glow {
     @apply animate-pulse shadow-lg shadow-yellow-400/50;
   }
+
+  /* Play Controls Styling */
+  .play-controls {
+    @apply min-w-[200px];
+  }
+
+  .play-controls .action-buttons button {
+    @apply min-w-[140px];
+  }
+  
+  .play-controls .action-buttons button:disabled {
+    @apply transform-none shadow-none;
+  }
+  
+  .play-controls .action-buttons button:not(:disabled):hover {
+    @apply scale-105;
+  }
+
+  /* Center area highlight */
+  .center-area {
+    @apply relative;
+  }
+  
+  .center-area::before {
+    content: '';
+    @apply absolute inset-0 -m-4 rounded-2xl border border-white/10 bg-white/5;
+    backdrop-filter: blur(10px);
+    z-index: -1;
+  }
 }

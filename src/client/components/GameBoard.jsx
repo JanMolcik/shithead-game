@@ -54,31 +54,68 @@ const GameBoard = ({
           <p className="text-white text-sm mt-2">Deck: {gameState.deck.length}</p>
         </div>
 
-        {/* Play Pile */}
-        <div className="play-pile-area text-center">
-          <div className={`pile ${playPile.length > 0 ? 'has-cards' : ''}`}>
-            {playPile.length > 0 ? (
-              <div className="relative">
-                {playPile.slice(-3).map((card, index) => (
-                  <Card 
-                    key={`pile-${index}`}
-                    card={card}
-                    size="normal"
-                    style={{
-                      position: index < 2 ? 'absolute' : 'relative',
-                      transform: `translate(${index * 2}px, ${index * -2}px) rotate(${index * 3}deg)`,
-                      zIndex: index
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-gray-500 text-sm">Empty Pile</div>
-            )}
+        {/* Play Controls - Center */}
+        <div className="play-controls text-center flex flex-col items-center gap-4">
+          {/* Play Pile */}
+          <div className="play-pile-area">
+            <div className={`pile ${playPile.length > 0 ? 'has-cards' : ''}`}>
+              {playPile.length > 0 ? (
+                <div className="relative">
+                  {playPile.slice(-3).map((card, index) => (
+                    <Card 
+                      key={`pile-${index}`}
+                      card={card}
+                      size="normal"
+                      style={{
+                        position: index < 2 ? 'absolute' : 'relative',
+                        transform: `translate(${index * 2}px, ${index * -2}px) rotate(${index * 3}deg)`,
+                        zIndex: index
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm">Play cards here</div>
+              )}
+            </div>
+            <p className="text-white text-sm mt-2">
+              Pile: {playPile.length} | Top: {pileTopValue}
+            </p>
           </div>
-          <p className="text-white text-sm mt-2">
-            Pile: {playPile.length} | Top: {pileTopValue}
-          </p>
+
+          {/* Action Buttons */}
+          {gameState.phase === 'playing' && currentPlayer === 0 && (
+            <div className="action-buttons flex gap-3">
+              <button
+                className={`font-bold py-3 px-6 rounded-lg transition-all duration-200 ${
+                  selectedCards.length > 0 
+                    ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1' 
+                    : 'bg-gray-500 cursor-not-allowed text-gray-300'
+                }`}
+                onClick={onPlayCards}
+                disabled={selectedCards.length === 0}
+              >
+                {selectedCards.length > 0 
+                  ? `Play ${selectedCards.length} Card${selectedCards.length > 1 ? 's' : ''}` 
+                  : 'Select Cards'
+                }
+              </button>
+              
+              <button
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 hover:shadow-lg"
+                onClick={onTakePile}
+              >
+                Take Pile
+              </button>
+            </div>
+          )}
+
+          {pendingJokerTarget && currentPlayer === 0 && (
+            <div className="bg-yellow-500/20 border border-yellow-400 rounded-lg p-4 text-center">
+              <p className="text-yellow-300 font-medium mb-2">🃏 Joker Played!</p>
+              <p className="text-white text-sm">Click an opponent to force them to take the pile</p>
+            </div>
+          )}
         </div>
 
         {/* Game Info */}
@@ -87,8 +124,10 @@ const GameBoard = ({
           <div className="space-y-1 text-sm text-white/80">
             <p>Current Turn: Player {currentPlayer + 1}</p>
             <p>Phase: {gameState.phase}</p>
-            {pendingJokerTarget && (
-              <p className="text-yellow-400 font-medium">Select Joker Target!</p>
+            {selectedCards.length > 0 && (
+              <p className="text-green-400 font-medium">
+                Selected: {selectedCards.length} card{selectedCards.length > 1 ? 's' : ''}
+              </p>
             )}
           </div>
         </div>
@@ -190,23 +229,15 @@ const HumanPlayerArea = ({
         )}
       </div>
 
-      {/* Action Buttons */}
+      {/* Instructions for player */}
       {gamePhase === 'playing' && isCurrentTurn && (
-        <div className="action-buttons flex justify-center gap-4 mt-6">
-          <button
-            className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={onPlayCards}
-            disabled={!hasValidMoves}
-          >
-            Play Cards ({selectedCards.length})
-          </button>
-          
-          <button
-            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-            onClick={onTakePile}
-          >
-            Take Pile
-          </button>
+        <div className="instructions text-center mt-4">
+          <p className="text-white/80 text-sm">
+            {selectedCards.length > 0 
+              ? `Selected ${selectedCards.length} card${selectedCards.length > 1 ? 's' : ''} - use center button to play`
+              : 'Click cards to select them, then play using the center button'
+            }
+          </p>
         </div>
       )}
     </div>
