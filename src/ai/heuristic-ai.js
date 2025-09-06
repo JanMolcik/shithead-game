@@ -245,11 +245,43 @@ export class HeuristicAI {
     })
   }
 
-  // Get valid moves for a player (delegate to game engine via import)
+  // Get valid moves for a player - simplified implementation
   getValidMoves(gameState, playerId) {
-    // Import here to avoid circular dependency
-    const { getValidMoves } = require('../../engine/game-utils.js')
-    return getValidMoves(playerId, gameState)
+    const player = gameState.players[playerId]
+    const moves = []
+    
+    // Determine active collection
+    let activeCards = []
+    let fromCollection = 'hand'
+    
+    if (player.hand.length > 0) {
+      activeCards = player.hand
+      fromCollection = 'hand'
+    } else if (player.faceUp.length > 0) {
+      activeCards = player.faceUp
+      fromCollection = 'faceUp'
+    } else if (player.blind.length > 0) {
+      activeCards = player.blind
+      fromCollection = 'blind'
+    }
+    
+    if (activeCards.length === 0) {
+      return [{ type: 'takePile' }]
+    }
+    
+    // For now, return simple moves - we'll validate in the engine
+    for (const card of activeCards) {
+      moves.push({
+        type: 'playCards',
+        cards: [card],
+        from: fromCollection
+      })
+    }
+    
+    // Always allow taking pile as fallback
+    moves.push({ type: 'takePile' })
+    
+    return moves
   }
 }
 

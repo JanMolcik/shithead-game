@@ -138,12 +138,19 @@ export const useGameState = () => {
   // Human player plays cards
   const playCards = useCallback(async (cards, fromCollection) => {
     try {
-      if (!gameEngineRef.current || gameState.currentPlayer !== 0) return
+      console.log('playCards called:', { cards, fromCollection, currentPlayer: gameState?.currentPlayer })
+      
+      if (!gameEngineRef.current || gameState.currentPlayer !== 0) {
+        console.log('Cannot play cards - not human turn or no engine')
+        return
+      }
       
       setError(null)
+      console.log('Calling game engine playCards...')
       gameEngineRef.current.playCards(0, cards, fromCollection)
       
       const updatedState = gameEngineRef.current.getPlayerView(0)
+      console.log('Updated state after play:', updatedState)
       setGameState(updatedState)
       
       // Check for game end
@@ -158,6 +165,7 @@ export const useGameState = () => {
       }
       
     } catch (err) {
+      console.error('Error playing cards:', err)
       setError(err.message)
     }
   }, [gameState, processAITurn])
@@ -210,16 +218,27 @@ export const useGameState = () => {
       return []
     }
     
-    return gameEngineRef.current.getValidMoves(0)
+    try {
+      return gameEngineRef.current.getValidMoves(0)
+    } catch (err) {
+      console.error('Error getting valid moves:', err)
+      return []
+    }
   }, [gameState])
 
   // Check if cards can be played
   const canPlayCards = useCallback((cards) => {
-    if (!gameEngineRef.current || !gameState || gameState.currentPlayer !== 0) {
+    if (!gameEngineRef.current || !gameState || gameState.currentPlayer !== 0 || cards.length === 0) {
       return false
     }
     
-    return gameEngineRef.current.canPlay(0, cards)
+    try {
+      return gameEngineRef.current.canPlay(0, cards)
+    } catch (err) {
+      console.error('Error checking if cards can play:', err)
+      // For now, allow any card selection - validation will happen on play
+      return true
+    }
   }, [gameState])
 
   // Reset game

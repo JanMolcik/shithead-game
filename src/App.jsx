@@ -48,28 +48,65 @@ function App() {
       return
     }
 
-    // Toggle card selection
-    setSelectedCards(prev => 
-      prev.includes(card) 
-        ? prev.filter(c => c !== card)
-        : [...prev, card]
-    )
+    // Helper function to get card rank
+    const getCardRank = (cardName) => {
+      return cardName.split('_')[0]
+    }
+
+    const cardRank = getCardRank(card)
+
+    setSelectedCards(prev => {
+      // If clicking on already selected card, deselect it
+      if (prev.includes(card)) {
+        return prev.filter(c => c !== card)
+      }
+
+      // If no cards selected, select this one
+      if (prev.length === 0) {
+        return [card]
+      }
+
+      // Check if this card has same rank as already selected cards
+      const selectedRank = getCardRank(prev[0])
+      if (cardRank === selectedRank) {
+        return [...prev, card]
+      }
+
+      // Different rank - replace selection with this card
+      return [card]
+    })
   }
 
   // Handle playing selected cards
   const handlePlayCards = () => {
-    if (selectedCards.length === 0 || !canPlayCards(selectedCards)) return
+    console.log('handlePlayCards called', { selectedCards, canPlay: canPlayCards(selectedCards) })
+    
+    if (selectedCards.length === 0) {
+      console.log('No cards selected')
+      return
+    }
 
     // Determine which collection the cards come from
     const humanPlayer = gameState?.players?.[0]
     let fromCollection = 'hand'
     
-    if (humanPlayer?.hand.length === 0) {
+    // Check if selected cards are in hand
+    const cardsInHand = selectedCards.every(card => humanPlayer?.hand.includes(card))
+    const cardsInFaceUp = selectedCards.every(card => humanPlayer?.faceUp.includes(card))
+    const cardsInBlind = selectedCards.every(card => humanPlayer?.blind.includes(card))
+    
+    if (cardsInHand) {
+      fromCollection = 'hand'
+    } else if (cardsInFaceUp) {
       fromCollection = 'faceUp'
-    } else if (humanPlayer?.hand.length === 0 && humanPlayer?.faceUp.length === 0) {
+    } else if (cardsInBlind) {
       fromCollection = 'blind'
+    } else {
+      console.error('Selected cards not found in any collection')
+      return
     }
 
+    console.log('Playing cards:', selectedCards, 'from:', fromCollection)
     playCards(selectedCards, fromCollection)
     setSelectedCards([])
   }
