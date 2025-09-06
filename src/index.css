@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom animations */
+@keyframes cardFlip {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(90deg); }
+  100% { transform: rotateY(0deg); }
+}
+
+@keyframes cardSlide {
+  0% { 
+    transform: translateX(-100px) translateY(-50px) rotate(-10deg);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Game-specific styles */
+@layer base {
+  body {
+    @apply bg-table-green text-white font-game;
+  }
+}
+
+@layer components {
+  .card {
+    @apply w-16 h-24 bg-white rounded-lg shadow-md border-2 border-gray-300;
+    @apply flex items-center justify-center text-2xl font-bold;
+    @apply transition-all duration-200 hover:shadow-lg cursor-pointer;
+  }
+  
+  .card.red {
+    @apply text-card-red;
+  }
+  
+  .card.black {
+    @apply text-card-black;
+  }
+  
+  .card.selected {
+    @apply transform -translate-y-2 shadow-xl ring-2 ring-yellow-400;
+  }
+  
+  .pile {
+    @apply min-h-24 w-16 bg-gray-700 rounded-lg border-2 border-dashed border-gray-500;
+    @apply flex items-center justify-center text-gray-400;
+  }
+}
