@@ -245,11 +245,11 @@ export class HeuristicAI {
     })
   }
 
-  // Get valid moves for a player (simplified version of engine method)
+  // Get valid moves for a player (delegate to game engine via import)
   getValidMoves(gameState, playerId) {
-    // This would typically delegate to the game engine
-    // For now, return a placeholder
-    return [{ type: 'takePile' }]
+    // Import here to avoid circular dependency
+    const { getValidMoves } = require('../../engine/game-utils.js')
+    return getValidMoves(playerId, gameState)
   }
 }
 

@@ -28,12 +28,28 @@
 }
 
 @layer components {
+  /* Card Base Styles */
   .card {
-    @apply w-16 h-24 bg-white rounded-lg shadow-md border-2 border-gray-300;
-    @apply flex items-center justify-center text-2xl font-bold;
-    @apply transition-all duration-200 hover:shadow-lg cursor-pointer;
+    @apply relative bg-white rounded-lg shadow-md border border-gray-300;
+    @apply transition-all duration-200 cursor-pointer select-none;
+    @apply flex flex-col items-center justify-between;
+    position: relative;
+  }
+
+  /* Card Sizes */
+  .card.small {
+    @apply w-12 h-16 text-xs;
   }
   
+  .card.normal {
+    @apply w-16 h-24 text-sm;
+  }
+  
+  .card.large {
+    @apply w-20 h-28 text-base;
+  }
+
+  /* Card Colors */
   .card.red {
     @apply text-card-red;
   }
@@ -41,13 +57,145 @@
   .card.black {
     @apply text-card-black;
   }
-  
+
+  /* Card States */
   .card.selected {
-    @apply transform -translate-y-2 shadow-xl ring-2 ring-yellow-400;
+    @apply transform -translate-y-2 shadow-xl ring-2 ring-yellow-400 z-10;
   }
   
+  .card.disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+  
+  .card.clickable:hover:not(.disabled) {
+    @apply shadow-lg transform -translate-y-1;
+  }
+
+  /* Magic Card Styles */
+  .card.magic-card {
+    @apply ring-2 ring-purple-400 bg-gradient-to-br from-purple-50 to-indigo-50;
+  }
+  
+  .card.magic-reset { @apply ring-blue-400; }
+  .card.magic-lower { @apply ring-green-400; }
+  .card.magic-invisible { @apply ring-gray-400; }
+  .card.magic-burn { @apply ring-red-400; }
+  .card.magic-reverse { @apply ring-orange-400; }
+  .card.magic-force { @apply ring-purple-600; }
+
+  /* Card Content Layout */
+  .card-content {
+    @apply w-full h-full p-1 flex flex-col justify-between relative;
+  }
+
+  .card-corner {
+    @apply flex flex-col items-center text-xs leading-none;
+  }
+  
+  .card-corner.top-left {
+    @apply self-start;
+  }
+  
+  .card-corner.bottom-right {
+    @apply self-end transform rotate-180;
+  }
+
+  .card-center {
+    @apply flex-1 flex items-center justify-center;
+  }
+
+  .suit-symbol.large {
+    @apply text-2xl;
+  }
+
+  .magic-symbol {
+    @apply text-lg opacity-70;
+  }
+
+  .magic-indicator {
+    @apply absolute -bottom-1 left-0 right-0 bg-purple-600 text-white text-xs;
+    @apply text-center py-0.5 rounded-b-lg opacity-80;
+  }
+
+  /* Card Back */
+  .card-back {
+    @apply bg-gradient-to-br from-blue-600 to-blue-800 border-blue-700;
+    @apply flex items-center justify-center;
+  }
+
+  .card-back-pattern {
+    @apply w-8 h-12 bg-blue-400 rounded opacity-30;
+    @apply bg-gradient-to-br from-blue-300 to-blue-500;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.1) 2px,
+      rgba(255,255,255,0.1) 4px
+    );
+  }
+
+  /* Card Collections */
+  .card-collection {
+    @apply flex gap-2;
+  }
+  
+  .card-collection.layout-spread {
+    @apply justify-center items-end;
+  }
+  
+  .card-collection.layout-spread .card {
+    margin-left: calc(var(--card-index) * -0.75rem);
+    z-index: var(--card-index);
+  }
+  
+  .card-collection.layout-stack .card {
+    @apply absolute;
+    transform: rotate(calc(var(--card-index) * 2deg)) 
+              translate(calc(var(--card-index) * 2px), calc(var(--card-index) * 2px));
+  }
+  
+  .card-collection.layout-grid {
+    @apply grid grid-cols-3 gap-2;
+  }
+
+  /* Game Table */
   .pile {
     @apply min-h-24 w-16 bg-gray-700 rounded-lg border-2 border-dashed border-gray-500;
-    @apply flex items-center justify-center text-gray-400;
+    @apply flex items-center justify-center text-gray-400 relative;
+  }
+  
+  .pile.has-cards {
+    @apply border-solid border-gray-400 bg-gray-600;
+  }
+
+  /* Player Areas */
+  .player-area {
+    @apply p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20;
+  }
+  
+  .player-area.human {
+    @apply bg-blue-500/20 border-blue-400/30;
+  }
+  
+  .player-area.ai {
+    @apply bg-red-500/20 border-red-400/30;
+  }
+  
+  .player-area.current-turn {
+    @apply ring-2 ring-yellow-400 bg-yellow-500/20;
+  }
+
+  /* Animations */
+  .card-slide-in {
+    animation: cardSlide 0.4s ease-out;
+  }
+  
+  .card-flip {
+    animation: cardFlip 0.3s ease-in-out;
+  }
+  
+  .pulse-glow {
+    @apply animate-pulse shadow-lg shadow-yellow-400/50;
   }
 }
